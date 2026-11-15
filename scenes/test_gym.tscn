@@ -1,0 +1,122 @@
+[gd_scene format=3 uid="uid://b3c5t65q7pt10"]
+
+[ext_resource type="Script" uid="uid://ylg0cf1ht3qd" path="res://scripts/components/training_dummy.gd" id="1_8qy8g"]
+[ext_resource type="Script" uid="uid://b2s1dkwvalg88" path="res://scripts/components/health_component.gd" id="1_cppg0"]
+[ext_resource type="Shader" uid="uid://dwfem7556g6ss" path="res://shaders/pixel_art_post.gdshader" id="1_hu5fg"]
+[ext_resource type="PackedScene" uid="uid://g31nuif6hs7i" path="res://scenes/player/Player.tscn" id="2_40yt6"]
+[ext_resource type="Script" uid="uid://da2yte03l2n8h" path="res://scripts/components/hurtbox_component.gd" id="2_v7oap"]
+[ext_resource type="Script" uid="uid://b0flys8p031nf" path="res://scenes/camera_rig.gd" id="5_3dxdl"]
+
+[sub_resource type="Environment" id="Environment_jca3c"]
+background_mode = 1
+background_color = Color(0.078431375, 0.08627451, 0.11372549, 1)
+ambient_light_color = Color(0.22745098, 0.2509804, 0.32156864, 1)
+ambient_light_energy = 0.6
+tonemap_mode = 2
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_jca3c"]
+size = Vector3(30, 1, 30)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jca3c"]
+albedo_color = Color(0.23137255, 0.2509804, 0.30588236, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_jca3c"]
+size = Vector3(30, 1, 30)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hu5fg"]
+albedo_color = Color(1, 0.36862746, 0.101960786, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_40yt6"]
+albedo_color = Color(0.11764706, 0.72156864, 0.8509804, 1)
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_st0so"]
+radius = 0.977
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_st0so"]
+albedo_color = Color(0.76862746, 0.5411765, 0.24705882, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jca3c"]
+shader = ExtResource("1_hu5fg")
+shader_parameter/pixel_size = 3.0
+shader_parameter/color_levels = 24.0
+shader_parameter/outline_threshold = 0.18
+shader_parameter/outline_color = Color(0.06, 0.04, 0.08, 1)
+
+[node name="TestGym" type="Node3D" unique_id=1922196711]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=2124057679]
+environment = SubResource("Environment_jca3c")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=187452368]
+transform = Transform3D(0.70710677, -0.49999997, 0.49999997, 0, 0.70710677, 0.70710677, -0.70710677, -0.49999997, 0.49999997, 0, 0, 0)
+shadow_enabled = true
+directional_shadow_max_distance = 60.0
+
+[node name="ArenaFloor" type="StaticBody3D" parent="." unique_id=220873379]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ArenaFloor" unique_id=535992700]
+shape = SubResource("BoxShape3D_jca3c")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ArenaFloor" unique_id=720906179]
+material_override = SubResource("StandardMaterial3D_jca3c")
+mesh = SubResource("BoxMesh_jca3c")
+
+[node name="Obstacles" type="Node3D" parent="." unique_id=535254574]
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Obstacles" unique_id=2133405592]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9854426, 1.5, 4.0286484)
+material_override = SubResource("StandardMaterial3D_hu5fg")
+use_collision = true
+size = Vector3(2, 2, 2)
+
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="Obstacles" unique_id=711995648 groups=["enemies"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1.5, -1)
+material_override = SubResource("StandardMaterial3D_40yt6")
+use_collision = true
+radius = 0.977
+script = ExtResource("1_8qy8g")
+
+[node name="HealthComponent" type="Node" parent="Obstacles/CSGCylinder3D" unique_id=823228245]
+script = ExtResource("1_cppg0")
+metadata/_custom_type_script = "uid://b2s1dkwvalg88"
+
+[node name="HurtboxComponent" type="Area3D" parent="Obstacles/CSGCylinder3D" unique_id=309991561 node_paths=PackedStringArray("health_component")]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("2_v7oap")
+health_component = NodePath("../HealthComponent")
+metadata/_custom_type_script = "uid://da2yte03l2n8h"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Obstacles/CSGCylinder3D/HurtboxComponent" unique_id=1368540236]
+shape = SubResource("CylinderShape3D_st0so")
+
+[node name="CSGPolygon3D" type="CSGPolygon3D" parent="Obstacles" unique_id=1599896674]
+transform = Transform3D(0.26886493, 0, -0.9631779, 0, 1, 0, 0.9631779, 0, 0.26886493, 3.1632228, 0.4529612, 4.946906)
+material_override = SubResource("StandardMaterial3D_st0so")
+use_collision = true
+polygon = PackedVector2Array(0, 0, 1, 1, 1, 0)
+
+[node name="PostProcessLayer" type="CanvasLayer" parent="." unique_id=116758347]
+layer = 10
+
+[node name="PixelShaderRect" type="ColorRect" parent="PostProcessLayer" unique_id=51266847]
+material = SubResource("ShaderMaterial_jca3c")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Player" parent="." unique_id=271659356 instance=ExtResource("2_40yt6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.49999988, 0)
+
+[node name="CameraRig" type="Node3D" parent="." unique_id=1152295708 node_paths=PackedStringArray("target")]
+transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 0, 0, 0)
+script = ExtResource("5_3dxdl")
+target = NodePath("../Player")
+
+[node name="Camera3D" type="Camera3D" parent="CameraRig" unique_id=913280205]
+transform = Transform3D(1, 0, 0, 0, 0.81915206, 0.57357645, 0, -0.57357645, 0.81915206, 0, 14, 14)
+projection = 1
+size = 14.0
