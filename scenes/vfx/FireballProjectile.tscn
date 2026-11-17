@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://bjjgqmrrjavyx"]
+
+[ext_resource type="Script" uid="uid://7ppjiocf5gtu" path="res://scenes/vfx/fireball_projectile.gd" id="1_dlatv"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_25fxx"]
+radius = 0.45
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_25fxx"]
+albedo_color = Color(1, 0.40000004, 0, 1)
+emission_enabled = true
+
+[sub_resource type="SphereMesh" id="SphereMesh_25fxx"]
+material = SubResource("StandardMaterial3D_25fxx")
+radius = 0.45
+height = 0.7
+
+[node name="FireballProjectile" type="Area3D" unique_id=1758390004]
+collision_layer = 0
+collision_mask = 3
+script = ExtResource("1_dlatv")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=147317832]
+shape = SubResource("SphereShape3D_25fxx")
+
+[node name="FireCore" type="MeshInstance3D" parent="." unique_id=114252682]
+mesh = SubResource("SphereMesh_25fxx")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="." unique_id=475540456]
+light_color = Color(1, 0.31666666, 0, 1)
+omni_range = 4.0
+
+[node name="VisibleOnScreenNotifier3D" type="VisibleOnScreenNotifier3D" parent="." unique_id=1250587368]

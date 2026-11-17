@@ -1,0 +1,65 @@
+[gd_scene format=3 uid="uid://u72rm3ynkj14"]
+
+[ext_resource type="Script" uid="uid://dauvhocn4gju0" path="res://Teste Aparte/hit_flare.gd" id="1_e5wxo"]
+[ext_resource type="Shader" uid="uid://rbqmvhnqkif1" path="res://Teste Aparte/HitFlare.gdshader" id="1_vsh1a"]
+[ext_resource type="Texture2D" uid="uid://bojgdllemnrw1" path="res://Teste Aparte/Visual Vibrants.png" id="2_v5nr8"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_goq8b"]
+shader = ExtResource("1_vsh1a")
+shader_parameter/base_radius = 0.65
+shader_parameter/start_thickness = 0.022
+shader_parameter/end_thickness = 0.002
+shader_parameter/spin_amount = 3.5
+shader_parameter/flare_intensity = 2.8
+shader_parameter/chromatic_aberration = 0.035
+shader_parameter/noise_amount = 0.01
+shader_parameter/glass_refraction = 0.06000000285
+shader_parameter/rim_glass_reflection = 0.250000011875
+shader_parameter/core_color = Color(0.95, 0.98, 1, 1)
+
+[sub_resource type="Gradient" id="Gradient_e5wxo"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_73kdo"]
+gradient = SubResource("Gradient_e5wxo")
+width = 512
+height = 512
+
+[sub_resource type="Gradient" id="Gradient_v5nr8"]
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_0y0xh"]
+gradient = SubResource("Gradient_v5nr8")
+
+[sub_resource type="Curve" id="Curve_8ig1r"]
+_data = [Vector2(0, 0.017857194), 0.0, 3.8404021, 0, 0, Vector2(1, 1), 0.039540395, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_8ig1r"]
+curve = SubResource("Curve_8ig1r")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_v5nr8"]
+particle_flag_disable_z = true
+angle_min = 1.0728835e-05
+angle_max = 360.00003
+gravity = Vector3(0, 0, 0)
+scale_curve = SubResource("CurveTexture_8ig1r")
+color_ramp = SubResource("GradientTexture1D_0y0xh")
+
+[node name="HitFlare" type="Node2D" unique_id=1687509460]
+script = ExtResource("1_e5wxo")
+
+[node name="VisualVibrants" type="Sprite2D" parent="." unique_id=360925385]
+position = Vector2(0, -2)
+texture = ExtResource("2_v5nr8")
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="." unique_id=468680584]
+material = SubResource("ShaderMaterial_goq8b")
+position = Vector2(0, -2.3841858e-07)
+scale = Vector2(0.99999994, 0.99999994)
+emitting = false
+amount = 2
+texture = SubResource("GradientTexture2D_73kdo")
+one_shot = true
+explosiveness = 1.0
+process_material = SubResource("ParticleProcessMaterial_v5nr8")

@@ -21,6 +21,9 @@ extends CharacterBody3D
 @onready var melee_hitbox: HitboxComponent = $VisualRoot/MeleeHitbox
 @onready var soft_lock_area: Area3D = $SoftLockArea
 
+@onready var skill_manager: SkillManagerComponent = $SkillManagerComponent
+@onready var elemental: ElementalComponent = $ElementalComponent
+
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 var _camera_yaw: float = deg_to_rad(45.0)
 var _last_move_dir: Vector3 = Vector3(0, 0, -1)
@@ -37,12 +40,25 @@ func _ready() -> void:
 	var active_cam := get_viewport().get_camera_3d()
 	if active_cam:
 		_camera_yaw = active_cam.global_rotation.y
+	if elemental:
+		elemental.setup(self)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("dash") and not _is_dashing and _dash_cooldown_timer <= 0.0:
 		_start_dash()
 	elif event.is_action_pressed("attack_basic") and not _is_attacking and not _is_dashing:
 		_perform_basic_attack()
+	elif event.is_action_pressed("skill_1") and not _is_dashing:
+		if skill_manager.trigger_skill("skill_1"):
+			var aim_dir := _get_soft_lock_direction(_last_move_dir)
+			visual_root.look_at(visual_root.global_position + aim_dir, Vector3.UP)
+			elemental.cast_skill_1(global_position, aim_dir)
+	elif event.is_action_pressed("skill_2") and not _is_dashing:
+		if skill_manager.trigger_skill("skill_2"):
+			elemental.cast_skill_2(global_position)
+	elif event.is_action_pressed("ultimate") and not _is_dashing:
+		if skill_manager.trigger_skill("ultimate"):
+			elemental.cast_ultimate()
 
 func _physics_process(delta: float) -> void:
 	# Timers
@@ -90,6 +106,8 @@ func _start_dash() -> void:
 	# Ativa i-frames durante o Dash
 	health_component.is_invulnerable = true
 	visual_root.rotation.y = atan2(-_dash_direction.x, -_dash_direction.z)
+	if elemental:
+		elemental.on_dash_started(global_position)
 
 func _process_dash(delta: float) -> void:
 	_dash_timer -= delta

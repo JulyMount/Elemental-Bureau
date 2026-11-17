@@ -4,6 +4,10 @@
 [ext_resource type="Script" uid="uid://clk4xmsm4mdnj" path="res://scripts/components/hitbox_component.gd" id="2_gfjak"]
 [ext_resource type="Script" uid="uid://da2yte03l2n8h" path="res://scripts/components/hurtbox_component.gd" id="3_4kuee"]
 [ext_resource type="Script" uid="uid://b2s1dkwvalg88" path="res://scripts/components/health_component.gd" id="4_524rm"]
+[ext_resource type="Script" uid="uid://dg8rwq8w3rpav" path="res://scripts/components/elemental_component.gd" id="5_tpg5x"]
+[ext_resource type="Resource" uid="uid://e5d4o78ytyo0" path="res://scripts/resources/fogo.tres" id="6_c3xxp"]
+[ext_resource type="PackedScene" uid="uid://bjjgqmrrjavyx" path="res://scenes/vfx/FireballProjectile.tscn" id="7_npwbq"]
+[ext_resource type="Script" uid="uid://c03xyuvk6w3fv" path="res://scripts/components/skill_manager_component.gd" id="8_v42im"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_wr5hl"]
 radius = 0.4
@@ -68,3 +72,12 @@ metadata/_custom_type_script = "uid://b2s1dkwvalg88"
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="SoftLockArea" unique_id=1319648603]
 shape = SubResource("SphereShape3D_524rm")
+
+[node name="ElementalComponent" type="Node" parent="." unique_id=651928327]
+script = ExtResource("5_tpg5x")
+current_element = ExtResource("6_c3xxp")
+fireball_scene = ExtResource("7_npwbq")
+
+[node name="SkillManagerComponent" type="Node" parent="." unique_id=246323317]
+script = ExtResource("8_v42im")
+metadata/_custom_type_script = "uid://c03xyuvk6w3fv"
