@@ -6,8 +6,9 @@ extends StaticBody3D
 @export var explosion_force: float = 6.2
 @export var upward_force: float = 4.8
 @export var persist_debris: bool = true # Deixe false para os escombros sumirem após debris_lifetime
+@export var physics_freeze_delay: float = 4.0 # Tempo até congelar a física e colisão dos estilhaços
 @export var debris_lifetime: float = 4.0
-@export var max_world_debris: int = 120 # Limite de segurança mesmo no modo persistente
+@export var max_world_debris: int = 120 # Limite de segurança para manter o FPS alto
 
 var shatter_damage: float = 55.0
 var _is_shattered: bool = false
@@ -126,32 +127,45 @@ func _spawn_rigid_shards(origin: Vector3) -> void:
 	_cleanup_shards(container)
 
 func _cleanup_shards(container: Node3D) -> void:
+	var tree := get_tree()
 	container.add_to_group("earth_debris_clusters")
 	
-	# Limite de segurança para nunca travar o FPS em lutas muito longas
-	var clusters := get_tree().get_nodes_in_group("earth_debris_clusters")
+	# Limite de segurança para nunca pesar no FPS em lutas longas
+	var clusters := tree.get_nodes_in_group("earth_debris_clusters")
 	if clusters.size() * 8 > max_world_debris and clusters.size() > 1:
 		var oldest := clusters[0] as Node3D
 		if is_instance_valid(oldest) and oldest != container:
 			oldest.queue_free()
 	
-	if persist_debris:
-		return
+	# Captura os valores dos @export antes do RockPillar ser destruído
+	var should_persist: bool = persist_debris
+	var life_time: float = debris_lifetime
 	
-	# Se persist_debris estiver desativado, dissolve após debris_lifetime
-	var timer := get_tree().create_timer(debris_lifetime)
-	await timer.timeout
-	if not is_instance_valid(container):
-		return
+	# 1. Após physics_freeze_delay (4s), congela a física e desativa colisões
+	tree.create_timer(physics_freeze_delay).timeout.connect(func() -> void:
+		if not is_instance_valid(container):
+			return
+		for child in container.get_children():
+			if child is RigidBody3D:
+				child.freeze = true
+				child.collision_layer = 0
+				child.collision_mask = 0
+				var col := child.get_node_or_null("CollisionShape3D") as CollisionShape3D
+				if col:
+					col.disabled = true
+	)
 	
-	var tween := container.create_tween().set_parallel(true)
-	for child in container.get_children():
-		if child is RigidBody3D:
-			tween.tween_property(child, "scale", Vector3.ZERO, 0.45).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	
-	await tween.finished
-	if is_instance_valid(container):
-		container.queue_free()
+	# 2. Se persist_debris estiver desmarcado, encolhe e apaga após debris_lifetime
+	if not should_persist:
+		tree.create_timer(life_time).timeout.connect(func() -> void:
+			if not is_instance_valid(container):
+				return
+			var tween := container.create_tween().set_parallel(true)
+			for child in container.get_children():
+				if child is RigidBody3D:
+					tween.tween_property(child, "scale", Vector3.ZERO, 0.45).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+			tween.chain().tween_callback(container.queue_free)
+		)
 
 func _spawn_pillar_dust(pos: Vector3, amount: int, speed: float) -> void:
 	var dust := GPUParticles3D.new()

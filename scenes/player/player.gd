@@ -54,7 +54,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			visual_root.look_at(visual_root.global_position + aim_dir, Vector3.UP)
 			elemental.cast_skill_1(global_position, aim_dir)
 	elif event.is_action_pressed("skill_2") and not _is_dashing:
-		if skill_manager.trigger_skill("skill_2"):
+		if elemental and elemental.can_cast_skill_2() and skill_manager.trigger_skill("skill_2"):
 			elemental.cast_skill_2(global_position)
 	elif event.is_action_pressed("ultimate") and not _is_dashing:
 		if skill_manager.trigger_skill("ultimate"):

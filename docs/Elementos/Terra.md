@@ -21,4 +21,5 @@ Conectado a: [[00 - Elemental Bureau (GDD)]] | [[02 - Arquitetura Tecnica]]
 ## Ajustes Pendentes (Polimento)
 * [x] Substituir cubo placeholder por monólito procedural segmentado (`ProceduralMeshFactory`) com variação de blocos, pedras na base e inclinação única por conjuração.
 * [x] Aplicar shader `ground_crack.gdshader` (`crack_mat.tres`) e coroa radial 3D nas ondas de impacto.
+* [x] **Etapa F1-B — VFX Completo de Terra & Rocha:** Pilares monolíticos procedurais (`create_faceted_pillar`), estilhaços físicos (`RigidBody3D`) com `physics_freeze_delay` e `persist_debris`, poeira volumétrica (`DustRing` + `FlyingDebris`) e Suprema V4 com lascas rochosas orbitais (`create_rock_shard`).
 * [ ] Ajustar paleta de cores/textura dos monólitos e adicionar partículas de poeira/detritos (`GPUParticles3D`).

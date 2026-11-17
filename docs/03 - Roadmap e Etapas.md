@@ -10,6 +10,7 @@ Conectado a: [[00 - Elemental Bureau (GDD)]]
 * [x] **Etapa C2 — Elemento Terra:** `terra.tres`, `RockPillar` destrutível, [[Terra|Kit completo de Terra]] e troca rápida de elemento (`switch_element`).
 * [x] **Etapa F1 — Malhas Procedurais e Shaders Reutilizáveis:** `ProceduralMeshFactory` (monólitos segmentados, estilhaços, coroa radial) + shaders `stylized_fire.gdshader` e `ground_crack.gdshader`.
 * [x] **Etapa F1-A — VFX Completo de Fogo & Impacto Stylized:** `FireballProjectile` com cauda e faíscas, `StylizedHitVFX` suavizado, trilhas 3D de fogo/fumaça no Dash, bursts radiais e Suprema V4 com aura de partículas + `screen_heat_distortion.gdshader` com fade.
+* [x] **Etapa F1-B — VFX Completo de Terra & Rocha:** Pilares monolíticos procedurais (`create_faceted_pillar`), estilhaços físicos (`RigidBody3D`) com `physics_freeze_delay` e `persist_debris`, poeira volumétrica (`DustRing` + `FlyingDebris`) e Suprema V4 com lascas rochosas orbitais (`create_rock_shard`).
 
 ## Próximos Passos
 * [ ] **Etapa D — HUD e Feedback de UI:** Barra de vida, indicador do elemento ativo, medidor de Pressão Térmica / Pilares ativos e cooldowns visuais.

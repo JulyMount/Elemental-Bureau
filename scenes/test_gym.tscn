@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://g31nuif6hs7i" path="res://scenes/player/Player.tscn" id="2_40yt6"]
 [ext_resource type="Script" uid="uid://da2yte03l2n8h" path="res://scripts/components/hurtbox_component.gd" id="2_v7oap"]
 [ext_resource type="Script" uid="uid://b0flys8p031nf" path="res://scenes/camera_rig.gd" id="5_3dxdl"]
+[ext_resource type="Script" uid="uid://5x8j1tvv1tbf" path="res://scripts/ui/combat_hud.gd" id="7_unxgw"]
 
 [sub_resource type="Environment" id="Environment_jca3c"]
 background_mode = 1
@@ -183,3 +184,8 @@ target = NodePath("../Player")
 transform = Transform3D(1, 0, 0, 0, 0.81915206, 0.57357645, 0, -0.57357645, 0.81915206, 0, 14, 14)
 projection = 1
 size = 14.0
+
+[node name="CombatHUD" type="CanvasLayer" parent="." unique_id=183771072]
+layer = 50
+script = ExtResource("7_unxgw")
+player_path = NodePath("../Player")

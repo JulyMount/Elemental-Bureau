@@ -4,6 +4,7 @@ extends Node
 signal element_switched(new_element: ElementData)
 signal thermal_pressure_changed(current_heat: float, max_heat: float, is_overheated: bool)
 signal ultimate_state_changed(is_active: bool)
+signal earth_pillars_changed(active_count: int, max_count: int)
 
 @export var fire_element: ElementData
 @export var earth_element: ElementData
@@ -64,6 +65,7 @@ func switch_element() -> void:
 		mat.albedo_color = current_element.primary_color
 		body_mesh.material_override = mat
 	
+	_sync_element_cooldowns()
 	element_switched.emit(current_element)
 	print("Elemento ativo: ", current_element.element_name)
 
@@ -334,7 +336,11 @@ func _cast_tectonic_eruption(origin: Vector3, aim_dir: Vector3) -> void:
 	get_tree().current_scene.add_child(pillar)
 	pillar.global_position = spawn_pos
 	pillar.shatter_damage = current_element.skill_2_damage
+	
+	# Avisa o HUD automaticamente quando este pilar for destruído ou expirar
+	pillar.tree_exited.connect(_on_pillar_removed)
 	_active_pillars.append(pillar)
+	earth_pillars_changed.emit(_active_pillars.size(), MAX_ACTIVE_PILLARS)
 	
 	# Dano de impacto ao erguer o pilar do chão
 	_damage_enemies_in_radius(spawn_pos, 2.0, current_element.skill_1_damage, 11.0)
@@ -356,11 +362,33 @@ func _cast_shatter_pillars() -> void:
 			_spawn_visual_ring(pillar.global_position, pillar.shatter_radius, Color(0.8, 0.55, 0.25, 0.75))
 			pillar.shatter(true)
 	_active_pillars.clear()
+	earth_pillars_changed.emit(0, MAX_ACTIVE_PILLARS)
 	
 	# Hitstop tático na detonação
 	Engine.time_scale = 0.08
 	await get_tree().create_timer(0.045, true, false, true).timeout
 	Engine.time_scale = 1.0
+
+func _on_pillar_removed() -> void:
+	_active_pillars = _active_pillars.filter(func(p): return is_instance_valid(p))
+	earth_pillars_changed.emit(_active_pillars.size(), MAX_ACTIVE_PILLARS)
+
+func can_cast_skill_2() -> bool:
+	if not current_element:
+		return false
+	if current_element.element_type == ElementData.ElementType.FIRE:
+		return thermal_pressure > 0.0 and not is_overheated
+	elif current_element.element_type == ElementData.ElementType.EARTH:
+		_active_pillars = _active_pillars.filter(func(p): return is_instance_valid(p))
+		return not _active_pillars.is_empty()
+	return true
+
+func _sync_element_cooldowns() -> void:
+	if not _player or not _player.skill_manager or not current_element:
+		return
+	_player.skill_manager.cooldowns["skill_1"] = current_element.skill_1_cooldown
+	_player.skill_manager.cooldowns["skill_2"] = current_element.skill_2_cooldown
+	_player.skill_manager.cooldowns["ultimate"] = current_element.ultimate_cooldown
 
 func _cast_rock_colossus_v4() -> void:
 	is_ultimate_active = true

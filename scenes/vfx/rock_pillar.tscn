@@ -14,8 +14,6 @@ size = Vector3(1.2, 2.2, 1.2)
 
 [node name="RockPillar" type="StaticBody3D" unique_id=2057777568]
 script = ExtResource("1_gs422")
-max_lifetime = null
-shatter_radius = null
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1846104242]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
