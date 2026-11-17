@@ -86,10 +86,10 @@ func _process(delta: float) -> void:
 			elif current_element.element_type == ElementData.ElementType.EARTH:
 				_effect_timer = 0.85
 				_trigger_seismic_pulse(_player.global_position, 3.8, 22.0)
-	if is_instance_valid(_v4_light):
-		_v4_time += delta * 14.0
-		var n: float = _v4_noise.get_noise_1d(_v4_time)
-		_v4_light.light_energy = remap(n, -1.0, 1.0, 2.5, 5.2)
+	if is_instance_valid(_player):
+		var rock_orbit := _player.get_node_or_null("RockColossusOrbit") as Node3D
+		if rock_orbit:
+			rock_orbit.rotate_y(delta * 2.5)
 
 # --- ROTEADOR DE HABILIDADES POR ELEMENTO ---
 
@@ -379,12 +379,37 @@ func _cast_rock_colossus_v4() -> void:
 		var grow_tween := visual_root.create_tween()
 		grow_tween.tween_property(visual_root, "scale", Vector3.ONE * 1.45, 0.2).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	
+	# Aura orbital de 5 fragmentos rochosos procedurais (create_rock_shard)
+	var orbit_ring := Node3D.new()
+	orbit_ring.name = "RockColossusOrbit"
+	orbit_ring.position = Vector3(0, 1.0, 0)
+	_player.add_child(orbit_ring)
+	
+	var shard_mat := StandardMaterial3D.new()
+	shard_mat.albedo_color = Color(0.62, 0.42, 0.23)
+	shard_mat.emission_enabled = true
+	shard_mat.emission = Color(0.90, 0.55, 0.18)
+	shard_mat.emission_energy_multiplier = 0.45
+	
+	for i in range(5):
+		var shard := MeshInstance3D.new()
+		shard.mesh = ProceduralMeshFactory.create_rock_shard(0.34, 700 + i)
+		shard.material_override = shard_mat
+		var ang: float = (TAU / 5.0) * i
+		shard.position = Vector3(cos(ang) * 1.15, sin(float(i) * 1.4) * 0.22, sin(ang) * 1.15)
+		shard.rotation_degrees = Vector3(18.0, rad_to_deg(ang), 14.0)
+		orbit_ring.add_child(shard)
+	
+	StylizedHitVFX.spawn(get_tree(), _player.global_position + Vector3(0, 1.0, 0), Color(0.92, 0.62, 0.24), 1.4)
+	
 	# Pulso inicial forte ao transformar
 	_trigger_seismic_pulse(_player.global_position, 4.2, 35.0)
 	print("SUPREMA V4 ATIVADA: Colosso de Rocha!")
 	
 	await get_tree().create_timer(current_element.ultimate_duration).timeout
 	
+	if is_instance_valid(orbit_ring):
+		orbit_ring.queue_free()
 	if visual_root:
 		var shrink_tween := visual_root.create_tween()
 		shrink_tween.tween_property(visual_root, "scale", Vector3.ONE, 0.2)
@@ -571,6 +596,69 @@ func _spawn_visual_ring(center: Vector3, radius: float, col: Color) -> void:
 		await get_tree().create_timer(1.1).timeout
 		if is_instance_valid(burst_root):
 			burst_root.queue_free()
+	elif current_element and current_element.element_type == ElementData.ElementType.EARTH:
+		var earth_root := Node3D.new()
+		get_tree().current_scene.add_child(earth_root)
+		earth_root.global_position = center + Vector3(0, 0.15, 0)
+		
+		# DustRing: Anel de poeira expandindo no solo
+		var dust_ring := GPUParticles3D.new()
+		dust_ring.emitting = true
+		dust_ring.one_shot = true
+		dust_ring.explosiveness = 0.95
+		dust_ring.amount = 24
+		dust_ring.lifetime = 0.55
+		var d_mat := ParticleProcessMaterial.new()
+		d_mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_RING
+		d_mat.emission_ring_radius = radius * 0.3
+		d_mat.emission_ring_inner_radius = 0.1
+		d_mat.emission_ring_height = 0.1
+		d_mat.emission_ring_axis = Vector3(0, 1, 0)
+		d_mat.direction = Vector3(0, 0.25, 0)
+		d_mat.spread = 85.0
+		d_mat.initial_velocity_min = radius * 1.2
+		d_mat.initial_velocity_max = radius * 2.1
+		d_mat.gravity = Vector3(0, -2.5, 0)
+		d_mat.angular_velocity_min = -90.0
+		d_mat.angular_velocity_max = 90.0
+		d_mat.scale_min = 0.35
+		d_mat.scale_max = 0.65
+		d_mat.color = Color(0.58, 0.46, 0.35, 0.8)
+		dust_ring.process_material = d_mat
+		dust_ring.draw_pass_1 = _create_unshaded_quad(Vector2(0.55, 0.55), Color(0.58, 0.47, 0.36, 0.78), true)
+		earth_root.add_child(dust_ring)
+		
+		# FlyingDebris: Lascas rochosas (create_rock_shard) saltando no impacto
+		var debris := GPUParticles3D.new()
+		debris.emitting = true
+		debris.one_shot = true
+		debris.explosiveness = 0.95
+		debris.amount = 16
+		debris.lifetime = 0.60
+		var f_mat := ParticleProcessMaterial.new()
+		f_mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
+		f_mat.emission_sphere_radius = radius * 0.45
+		f_mat.direction = Vector3(0, 1, 0)
+		f_mat.spread = 50.0
+		f_mat.initial_velocity_min = 4.5
+		f_mat.initial_velocity_max = 8.5
+		f_mat.gravity = Vector3(0, -18.0, 0)
+		f_mat.angular_velocity_min = -240.0
+		f_mat.angular_velocity_max = 240.0
+		f_mat.scale_min = 0.35
+		f_mat.scale_max = 0.65
+		debris.process_material = f_mat
+		
+		var shard_mesh := ProceduralMeshFactory.create_rock_shard(0.32, 42)
+		var s_box_mat := StandardMaterial3D.new()
+		s_box_mat.albedo_color = Color(0.62, 0.42, 0.23)
+		shard_mesh.surface_set_material(0, s_box_mat)
+		debris.draw_pass_1 = shard_mesh
+		earth_root.add_child(debris)
+		
+		await get_tree().create_timer(0.85).timeout
+		if is_instance_valid(earth_root):
+			earth_root.queue_free()
 
 func _create_fire_particles(amount: int, spawn_radius: float, lifetime: float, up_vel: float, col: Color, one_shot: bool = false) -> GPUParticles3D:
 	var gp := GPUParticles3D.new()
