@@ -1,0 +1,13 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://bne6f1pcbxxec"]
+
+[ext_resource type="Shader" uid="uid://bml5dheh1puck" path="res://shaders/stylized_fire.gdshader" id="1_yrvyv"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_yrvyv")
+shader_parameter/core_color = Color(1, 0.95, 0.45, 1)
+shader_parameter/mid_color = Color(1, 0.42, 0.05, 1)
+shader_parameter/edge_color = Color(0.82, 0.1, 0.02, 1)
+shader_parameter/speed = 3.2
+shader_parameter/noise_scale = 5.5
+shader_parameter/wobble_strength = 0.08

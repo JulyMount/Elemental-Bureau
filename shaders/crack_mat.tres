@@ -1,0 +1,12 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://c7oinyd51w85y"]
+
+[ext_resource type="Shader" uid="uid://ryukk10me08o" path="res://shaders/ground_crack.gdshader" id="1_uarje"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_uarje")
+shader_parameter/crack_core = Color(1, 0.75, 0.2, 1)
+shader_parameter/crack_glow = Color(0.95, 0.3, 0.05, 1)
+shader_parameter/crack_density = 8.0
+shader_parameter/crack_width = 0.14
+shader_parameter/fade_alpha = 1.0

@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://bjjgqmrrjavyx"]
 
 [ext_resource type="Script" uid="uid://7ppjiocf5gtu" path="res://scenes/vfx/fireball_projectile.gd" id="1_dlatv"]
+[ext_resource type="Material" uid="uid://bne6f1pcbxxec" path="res://shaders/fire_mat.tres" id="2_23bo7"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_25fxx"]
 radius = 0.45
@@ -23,6 +24,7 @@ script = ExtResource("1_dlatv")
 shape = SubResource("SphereShape3D_25fxx")
 
 [node name="FireCore" type="MeshInstance3D" parent="." unique_id=114252682]
+material_override = ExtResource("2_23bo7")
 mesh = SubResource("SphereMesh_25fxx")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="." unique_id=475540456]

@@ -20,4 +20,5 @@ Conectado a: [[00 - Elemental Bureau (GDD)]] | [[02 - Arquitetura Tecnica]]
 
 ## Ajustes Pendentes (Polimento)
 * [x] Substituir cubo placeholder por monólito procedural segmentado (`ProceduralMeshFactory`) com variação de blocos, pedras na base e inclinação única por conjuração.
-* [ ] Aplicar shader `ground_crack.gdshader` nas ondas de impacto e partículas de poeira/detritos (`GPUParticles3D`).
+* [x] Aplicar shader `ground_crack.gdshader` (`crack_mat.tres`) e coroa radial 3D nas ondas de impacto.
+* [ ] Ajustar paleta de cores/textura dos monólitos e adicionar partículas de poeira/detritos (`GPUParticles3D`).

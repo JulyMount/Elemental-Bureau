@@ -19,5 +19,7 @@ Conectado a: [[00 - Elemental Bureau (GDD)]] | [[02 - Arquitetura Tecnica]]
 | **Suprema V4** | Corpo de Chama Viva | Invulnerabilidade, **+35% de velocidade** e rastro contínuo de brasas ao correr. | Duração `6.0s` \| Cooldown `14.0s` |
 
 ## Ajustes Pendentes (Balanceamento)
+* [x] Aplicar shader reutilizável `stylized_fire.gdshader` (`fire_mat.tres`) nas chamas, poças de brasas e Suprema V4, além de `ground_crack.gdshader` nas explosões. 
+* [ ] Ajustar parâmetros visuais (cores/escala de ruído) e balancear dano da Suprema V4 contra inimigos móveis.
 * [ ] Reduzir levemente o dano ou a frequência das poças da **Suprema V4** após testar contra inimigos móveis.
 * [ ] Substituir placeholders 3D pelo shader `fireball_shader.gdshader` e partículas `GPUParticles3D`.

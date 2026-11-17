@@ -13,6 +13,10 @@ signal ultimate_state_changed(is_active: bool)
 @export var fireball_scene: PackedScene
 @export var rock_pillar_scene: PackedScene
 
+@export_group("Materiais de Shader VFX")
+@export var fire_shader_material: ShaderMaterial
+@export var ground_crack_material: ShaderMaterial
+
 # Estado: Fogo
 var thermal_pressure: float = 0.0
 const MAX_THERMAL_PRESSURE: float = 100.0
@@ -167,11 +171,14 @@ func _cast_living_flame_v4() -> void:
 	_player.SPEED *= 1.35
 	
 	var body_mesh := _player.get_node_or_null("VisualRoot/BodyMesh") as MeshInstance3D
-	var flame_mat := StandardMaterial3D.new()
-	flame_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	flame_mat.albedo_color = Color(1.0, 0.45, 0.0)
 	if body_mesh:
-		body_mesh.material_override = flame_mat
+		if fire_shader_material:
+			body_mesh.material_override = fire_shader_material
+		else:
+			var flame_mat := StandardMaterial3D.new()
+			flame_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+			flame_mat.albedo_color = Color(1.0, 0.45, 0.0)
+			body_mesh.material_override = flame_mat
 		
 	print("SUPREMA V4 ATIVADA: Corpo de Chama Viva!")
 	await get_tree().create_timer(current_element.ultimate_duration).timeout
@@ -305,11 +312,13 @@ func _spawn_fire_patch(pos: Vector3, dmg_per_tick: float, duration: float) -> vo
 	cyl.height = 0.25
 	patch.mesh = cyl
 	
-	var mat := StandardMaterial3D.new()
-	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	mat.albedo_color = Color(1.0, 0.25, 0.0, 0.85)
-	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	patch.material_override = mat
+	if fire_shader_material:
+		patch.material_override = fire_shader_material
+	else:
+		var mat := StandardMaterial3D.new()
+		mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		mat.albedo_color = Color(1.0, 0.25, 0.0, 0.85)
+		patch.material_override = mat
 	
 	get_tree().current_scene.add_child(patch)
 	patch.global_position = Vector3(pos.x, pos.y + 0.15, pos.z)
@@ -324,23 +333,47 @@ func _spawn_fire_patch(pos: Vector3, dmg_per_tick: float, duration: float) -> vo
 		patch.queue_free()
 
 func _spawn_visual_ring(center: Vector3, radius: float, col: Color) -> void:
-	var ring := MeshInstance3D.new()
-	var cyl := CylinderMesh.new()
-	cyl.top_radius = radius
-	cyl.bottom_radius = radius
-	cyl.height = 0.35
-	ring.mesh = cyl
+	# 1. Disco de rachadura no solo (Shader Voronoi)
+	var ground_decal := MeshInstance3D.new()
+	var plane := PlaneMesh.new()
+	plane.size = Vector2(radius * 2.0, radius * 2.0)
+	ground_decal.mesh = plane
 	
-	var mat := StandardMaterial3D.new()
-	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	mat.albedo_color = col
-	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	ring.material_override = mat
+	if ground_crack_material:
+		var mat_inst := ground_crack_material.duplicate() as ShaderMaterial
+		mat_inst.set_shader_parameter("crack_core", col.lightened(0.35))
+		mat_inst.set_shader_parameter("crack_glow", col)
+		ground_decal.material_override = mat_inst
+	else:
+		var fallback := StandardMaterial3D.new()
+		fallback.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		fallback.albedo_color = col
+		fallback.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		ground_decal.material_override = fallback
 	
-	get_tree().current_scene.add_child(ring)
-	ring.global_position = Vector3(center.x, center.y + 0.2, center.z)
+	get_tree().current_scene.add_child(ground_decal)
+	ground_decal.global_position = Vector3(center.x, center.y + 0.06, center.z)
+	ground_decal.rotation.y = randf() * TAU
 	
-	var tween := ring.create_tween()
-	ring.scale = Vector3(0.1, 1.0, 0.1)
-	tween.tween_property(ring, "scale", Vector3.ONE, 0.25).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tween.tween_callback(ring.queue_free)
+	var tween := ground_decal.create_tween()
+	ground_decal.scale = Vector3(0.25, 1.0, 0.25)
+	tween.tween_property(ground_decal, "scale", Vector3.ONE, 0.22).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_interval(0.35)
+	tween.tween_callback(ground_decal.queue_free)
+	
+	# 2. Coroa de onda de choque 3D procedural
+	var crown := MeshInstance3D.new()
+	crown.mesh = ProceduralMeshFactory.create_shockwave_crown(radius * 0.55, radius, 0.45, 14)
+	var crown_mat := StandardMaterial3D.new()
+	crown_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	crown_mat.albedo_color = col.lightened(0.25)
+	crown_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	crown.material_override = crown_mat
+	
+	get_tree().current_scene.add_child(crown)
+	crown.global_position = Vector3(center.x, center.y + 0.08, center.z)
+	
+	var c_tween := crown.create_tween().set_parallel(true)
+	crown.scale = Vector3(0.2, 1.0, 0.2)
+	c_tween.tween_property(crown, "scale", Vector3(1.05, 0.1, 1.05), 0.26).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	c_tween.chain().tween_callback(crown.queue_free)
