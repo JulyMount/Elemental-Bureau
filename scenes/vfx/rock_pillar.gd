@@ -10,12 +10,29 @@ var _is_shattered: bool = false
 func _ready() -> void:
 	add_to_group("earth_pillars")
 	
-	# Animação rápida de emergir do solo
-	scale = Vector3(1.0, 0.05, 1.0)
-	var tween := create_tween()
-	tween.tween_property(self, "scale", Vector3.ONE, 0.16).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	# Substitui o cubo placeholder por uma estalagmite facetada única
+	var mesh_inst := get_node_or_null("MeshInstance3D") as MeshInstance3D
+	if mesh_inst:
+		var saved_mat: Material = mesh_inst.get_active_material(0)
+		mesh_inst.position.y = 0.0
+		mesh_inst.mesh = ProceduralMeshFactory.create_faceted_pillar(0.65, 2.4, 5, randi())
+		if saved_mat:
+			mesh_inst.material_override = saved_mat
+		rotation.y = randf_range(0.0, TAU)
 	
-	# Auto-destruição suave se não for estilhaçado antes
+	# Variação sutil de porte e inclinação ao romper o solo
+	var target_scale := Vector3(
+		randf_range(0.90, 1.15),
+		randf_range(0.88, 1.18),
+		randf_range(0.90, 1.15)
+	)
+	rotation.x = randf_range(-0.07, 0.07)
+	rotation.z = randf_range(-0.07, 0.07)
+	
+	scale = Vector3(target_scale.x, 0.05, target_scale.z)
+	var tween := create_tween()
+	tween.tween_property(self, "scale", target_scale, 0.16).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	
 	await get_tree().create_timer(max_lifetime).timeout
 	if not _is_shattered and is_instance_valid(self):
 		shatter(false)
@@ -37,26 +54,25 @@ func shatter(deal_damage: bool = true) -> void:
 						var push: Vector3 = (enemy_pos - global_position).normalized() * 12.0
 						hurtbox.apply_hit(shatter_damage, push)
 	
-	# Estilhaços visuais voando para os lados (baseado no guia de fratura 3D)
+	# Estilhaços angulares procedurais voando e girando
 	for i in range(6):
 		var chunk := MeshInstance3D.new()
-		var box := BoxMesh.new()
-		box.size = Vector3(0.45, 0.45, 0.45)
-		chunk.mesh = box
+		chunk.mesh = ProceduralMeshFactory.create_rock_shard(0.45, randi())
 		
 		var mat := StandardMaterial3D.new()
 		mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-		mat.albedo_color = Color(0.55, 0.38, 0.22)
+		mat.albedo_color = Color(0.58, 0.40, 0.24)
 		chunk.material_override = mat
 		
 		get_tree().current_scene.add_child(chunk)
 		chunk.global_position = global_position + Vector3(0, 1.0, 0)
 		
 		var angle: float = (TAU / 6.0) * i
-		var target_pos: Vector3 = chunk.global_position + Vector3(cos(angle) * 2.5, -0.8, sin(angle) * 2.5)
+		var target_pos: Vector3 = chunk.global_position + Vector3(cos(angle) * 2.6, -0.8, sin(angle) * 2.6)
 		var c_tween := chunk.create_tween().set_parallel(true)
-		c_tween.tween_property(chunk, "global_position", target_pos, 0.28).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-		c_tween.tween_property(chunk, "scale", Vector3.ZERO, 0.28)
+		c_tween.tween_property(chunk, "global_position", target_pos, 0.30).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		c_tween.tween_property(chunk, "rotation", Vector3(randf() * 6.0, randf() * 6.0, randf() * 6.0), 0.30)
+		c_tween.tween_property(chunk, "scale", Vector3.ZERO, 0.30)
 		c_tween.chain().tween_callback(chunk.queue_free)
 	
 	queue_free()

@@ -9,6 +9,6 @@ Em vez de herança profunda, as entidades combinam componentes independentes:
 * `SkillManagerComponent`: Controla cooldowns e disparo dos slots (`skill_1`, `skill_2`, `ultimate`).
 * `ElementalComponent`: Gerencia o `ElementData` ativo ([[Fogo]], [[Terra]]), recursos elementais e instanciação de habilidades.
 
-## Custom Resources (`ElementData`)
-* Molde em `res://scripts/resources/element_data.gd`.
-* Permite editar danos, durações e cooldowns direto no Inspetor via arquivos `.tres`.
+## Custom Resources & Geração Procedural
+* `ElementData` (`res://scripts/resources/element_data.gd`): Molde para editar danos, durações e cooldowns direto no Inspetor via arquivos `.tres`.
+* `ProceduralMeshFactory` (`res://scripts/utils/procedural_mesh_factory.gd`): Gera malhas 3D *low-poly* via `SurfaceTool`/`ArrayMesh` com UVs mapeados para shaders reutilizáveis (pilares monolíticos segmentados, estilhaços angulares e coroas de onda de choque).

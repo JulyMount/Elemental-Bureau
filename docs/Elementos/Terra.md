@@ -19,4 +19,5 @@ Conectado a: [[00 - Elemental Bureau (GDD)]] | [[02 - Arquitetura Tecnica]]
 | **Suprema V4** | Colosso de Rocha | Aumenta o tamanho do personagem em `+45%`, concede invulnerabilidade e emite pulsos sísmicos periódicos (`0.85s`). | `35` dano inicial + `22`/pulso \| Duração `7.0s` \| Cooldown `15.0s` |
 
 ## Ajustes Pendentes (Polimento)
-* [ ] Substituir placeholders 3D pelo shader `ground_crack.gdshader` e partículas de poeira/detritos (`GPUParticles3D`).
+* [x] Substituir cubo placeholder por monólito procedural segmentado (`ProceduralMeshFactory`) com variação de blocos, pedras na base e inclinação única por conjuração.
+* [ ] Aplicar shader `ground_crack.gdshader` nas ondas de impacto e partículas de poeira/detritos (`GPUParticles3D`).
