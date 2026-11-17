@@ -1,14 +1,16 @@
 shader_type spatial;
-render_mode unshaded, cull_disabled;
+render_mode blend_mix, depth_draw_opaque, cull_disabled, unshaded;
 
-uniform vec4 core_color : source_color = vec4(1.0, 0.95, 0.45, 1.0);
+uniform vec4 core_color : source_color = vec4(1.0, 0.96, 0.55, 1.0);
 uniform vec4 mid_color : source_color = vec4(1.0, 0.42, 0.05, 1.0);
 uniform vec4 edge_color : source_color = vec4(0.82, 0.10, 0.02, 1.0);
-uniform float speed : hint_range(0.5, 8.0) = 3.2;
+uniform vec2 scroll_speed = vec2(0.0, -3.2);
 uniform float noise_scale : hint_range(1.0, 15.0) = 5.5;
-uniform float wobble_strength : hint_range(0.0, 0.3) = 0.08;
+uniform float distortion_power : hint_range(0.0, 0.5) = 0.16;
+uniform float emission_energy : hint_range(1.0, 20.0) = 4.5;
+uniform float wobble_strength : hint_range(0.0, 0.3) = 0.06;
+uniform bool use_tail_fade = false;
 
-// Ruído procedural leve (não exige textura externa)
 float hash(vec2 p) {
 	return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
 }
@@ -36,29 +38,34 @@ float fbm(vec2 p) {
 }
 
 void vertex() {
-	// Ondulação sutil na malha para dar vida à chama
-	float n = noise(VERTEX.xz * 3.0 + vec2(0.0, TIME * speed));
+	float n = noise(VERTEX.xz * 3.0 + vec2(0.0, TIME * abs(scroll_speed.y)));
 	VERTEX += NORMAL * (n - 0.5) * wobble_strength;
 }
 
 void fragment() {
-	vec2 uv = UV * noise_scale;
-	uv.y -= TIME * speed;
+	// 1. Rolagem contínua e distorção UV
+	vec2 scrolled_uv = UV * noise_scale + TIME * scroll_speed;
+	float noise_val = fbm(scrolled_uv);
+	vec2 distorted_uv = scrolled_uv + vec2(noise_val * distortion_power, 0.0);
+	float fire_noise = fbm(distorted_uv + scrolled_uv * 0.5);
 	
-	float n = fbm(uv + vec2(fbm(uv * 1.4 - TIME * 1.2)));
+	// 2. Máscara opcional de cauda (afunila base e ponta no eixo Y)
+	float tail_mask = use_tail_fade ? sin(UV.y * 3.14159265) : 1.0;
+	float final_mask = fire_noise * tail_mask;
 	
-	// Faixas de cor nítidas estilo Pixel Art
+	// 3. Mapeamento em 3 faixas nítidas (Núcleo -> Meio -> Borda)
 	vec3 col = edge_color.rgb;
-	if (n > 0.62) {
+	if (final_mask > 0.56) {
 		col = core_color.rgb;
-	} else if (n > 0.38) {
+	} else if (final_mask > 0.34) {
 		col = mid_color.rgb;
 	}
 	
-	// Recorte duro nas bordas para evitar aspecto borrado no filtro pixelado
-	if (n < 0.22) {
+	// Recorte duro para manter estética 3D-to-Pixel Art
+	if (final_mask < 0.20) {
 		discard;
 	}
 	
 	ALBEDO = col;
+	EMISSION = col * emission_energy * final_mask;
 }

@@ -50,6 +50,27 @@ static func create_faceted_pillar(radius: float = 0.65, height: float = 2.4, seg
 	st.generate_normals()
 	return st.commit()
 
+## Gera uma malha em forma de estrela estilizada 3D para flashes de impacto (HitStar)
+static func create_hit_star(outer_radius: float = 1.1, inner_radius: float = 0.22, points: int = 4) -> ArrayMesh:
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	
+	var center := Vector3.ZERO
+	var total: int = points * 2
+	for i in range(total):
+		var next: int = (i + 1) % total
+		var a0: float = (TAU / float(total)) * i
+		var a1: float = (TAU / float(total)) * next
+		var r0: float = outer_radius if i % 2 == 0 else inner_radius
+		var r1: float = outer_radius if next % 2 == 0 else inner_radius
+		
+		var p0 := Vector3(cos(a0) * r0, sin(a0) * r0, 0.0)
+		var p1 := Vector3(cos(a1) * r1, sin(a1) * r1, 0.0)
+		_add_tri(st, center, p0, p1, Vector2(0.5, 0.5), Vector2(1.0, 0.5), Vector2(1.0, 1.0))
+	
+	st.generate_normals()
+	return st.commit()
+
 static func _add_rock_block(st: SurfaceTool, center: Vector3, r_bot: float, r_top: float, h: float, sides: int, rot_offset: float, tilt: Vector2, rng: RandomNumberGenerator) -> void:
 	var bot_ring: Array[Vector3] = []
 	var top_ring: Array[Vector3] = []
