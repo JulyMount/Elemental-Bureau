@@ -18,8 +18,11 @@ Conectado a: [[00 - Elemental Bureau (GDD)]] | [[02 - Arquitetura Tecnica]]
 | **Skill 2** | Onda de Calor | Consome toda a **Pressão Térmica** para liberar um pulso incendiário; raio e dano escalam com o calor. | Até `60` dano \| Raio `2.5m–5.5m` \| Cooldown `5.0s` |
 | **Suprema V4** | Corpo de Chama Viva | Invulnerabilidade, **+35% de velocidade** e rastro contínuo de brasas ao correr. | Duração `6.0s` \| Cooldown `14.0s` |
 
+## Visual e VFX Implementados (Alinhado à Knowledge Base)
+* [x] **Bola de Fogo (`FireballProjectile`):** Núcleo incandescente (`EMISSION` HDR), cauda cônica com fade UV (`use_tail_fade`), partículas de brasas (`Embers`), luz dinâmica oscilante (`FastNoiseLite`) e impacto estilizado (`StylizedHitVFX` com estrela 3D, coroa e faíscas).
+* [x] **Dash de Combustão:** Trilhas com 3 línguas de fogo 3D cruzadas, fumaça escura ascendente com rotação, faíscas e iluminação quente no piso.
+* [x] **Onda de Calor & Sobrecarga Térmica:** Rachaduras Voronoi no solo com labaredas e fumaça escura subindo pelas fendas, burst radial de chamas e flash laranja.
+* [x] **Suprema V4 (Corpo de Chama Viva):** Aura orgânica de labaredas em espiral (`GPUParticles3D` com `Scale Curve` e `Color Ramp`), halo 3D de calor (`heat_distortion.gdshader`), luz oscilante e distorção térmica de tela com fade-in/fade-out (`screen_heat_distortion.gdshader`, ajustável via Inspetor).
+
 ## Ajustes Pendentes (Balanceamento)
-* [x] Aplicar shader reutilizável `stylized_fire.gdshader` (`fire_mat.tres`) nas chamas, poças de brasas e Suprema V4, além de `ground_crack.gdshader` nas explosões. 
-* [ ] Ajustar parâmetros visuais (cores/escala de ruído) e balancear dano da Suprema V4 contra inimigos móveis.
-* [ ] Reduzir levemente o dano ou a frequência das poças da **Suprema V4** após testar contra inimigos móveis.
-* [ ] Substituir placeholders 3D pelo shader `fireball_shader.gdshader` e partículas `GPUParticles3D`.
+* [ ] Balancear dano da Suprema V4 contra inimigos móveis na Etapa E.
