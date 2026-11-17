@@ -1,0 +1,39 @@
+[gd_scene format=3 uid="uid://ch026opg8k7ju"]
+
+[ext_resource type="Script" uid="uid://clhrp22tsnex6" path="res://scripts/enemies/enemy_shooter.gd" id="1_uy5cs"]
+[ext_resource type="Script" uid="uid://b2s1dkwvalg88" path="res://scripts/components/health_component.gd" id="3_rbpn5"]
+[ext_resource type="Script" uid="uid://da2yte03l2n8h" path="res://scripts/components/hurtbox_component.gd" id="4_leijd"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_7jaen"]
+radius = 0.4
+height = 1.6
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_hfai5"]
+radius = 0.55
+height = 1.7
+
+[node name="EnemyShooter" type="CharacterBody3D" unique_id=2060835396]
+script = ExtResource("1_uy5cs")
+metadata/_custom_type_script = "uid://clhrp22tsnex6"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1588322026]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("CapsuleShape3D_7jaen")
+
+[node name="VisualRoot" type="Node3D" parent="." unique_id=506109204]
+
+[node name="HealthComponent" type="Node" parent="." unique_id=1241881490]
+script = ExtResource("3_rbpn5")
+max_health = 35.0
+metadata/_custom_type_script = "uid://b2s1dkwvalg88"
+
+[node name="HurtboxComponent" type="Area3D" parent="." unique_id=1566474890 node_paths=PackedStringArray("health_component")]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("4_leijd")
+health_component = NodePath("../HealthComponent")
+metadata/_custom_type_script = "uid://da2yte03l2n8h"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="HurtboxComponent" unique_id=486237576]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
+shape = SubResource("CapsuleShape3D_hfai5")

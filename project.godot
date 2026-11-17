@@ -92,6 +92,13 @@ switch_element={
 ]
 }
 
+[layer_names]
+
+3d_physics/layer_1="World"
+3d_physics/layer_2="EnemyHurtbox"
+3d_physics/layer_3="PlayerHurtbox"
+3d_physics/layer_4="Enemies"
+
 [physics]
 
 3d/physics_engine="Jolt Physics"

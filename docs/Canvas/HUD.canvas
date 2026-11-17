@@ -1,0 +1,13 @@
+{
+	"nodes":[
+		{"id":"dc5c2e01788778d2","type":"text","text":"HUD & Interface","x":-120,"y":-60,"width":250,"height":60,"color":"5"},
+		{"id":"d27a47f1ca01970c","x":-740,"y":-440,"width":250,"height":60,"color":"6","type":"text","text":"Referências"},
+		{"id":"87b96e71c1ac1b21","x":-440,"y":-220,"width":250,"height":60,"color":"4","type":"text","text":"Ideias"},
+		{"id":"6a376e48b0c29999","x":140,"y":-200,"width":250,"height":60,"color":"2","type":"text","text":"Componentes"}
+	],
+	"edges":[
+		{"id":"d3e21d143b67dc05","fromNode":"dc5c2e01788778d2","fromSide":"top","toNode":"87b96e71c1ac1b21","toSide":"right"},
+		{"id":"76bad526378e9134","fromNode":"87b96e71c1ac1b21","fromSide":"left","toNode":"d27a47f1ca01970c","toSide":"right"},
+		{"id":"6eaaa69ab5df0ea8","fromNode":"dc5c2e01788778d2","fromSide":"top","toNode":"6a376e48b0c29999","toSide":"left"}
+	]
+}
