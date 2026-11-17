@@ -37,6 +37,12 @@ func _process_chase(delta: float) -> void:
 		_move_velocity.x = move_toward(_move_velocity.x, dir.x * move_speed, acceleration * delta)
 		_move_velocity.z = move_toward(_move_velocity.z, dir.z * move_speed, acceleration * delta)
 
+func _get_visor_transform() -> Dictionary:
+	return {
+		"pos": Vector3(0.0, 0.65, -0.36),
+		"size": Vector3(0.42, 0.16, 0.24)
+	}
+
 func _on_attack_started() -> void:
 	_spawn_enemy_orb()
 

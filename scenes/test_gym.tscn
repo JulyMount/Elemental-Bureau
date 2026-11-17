@@ -7,6 +7,8 @@
 [ext_resource type="Script" uid="uid://da2yte03l2n8h" path="res://scripts/components/hurtbox_component.gd" id="2_v7oap"]
 [ext_resource type="Script" uid="uid://b0flys8p031nf" path="res://scenes/camera_rig.gd" id="5_3dxdl"]
 [ext_resource type="Script" uid="uid://5x8j1tvv1tbf" path="res://scripts/ui/combat_hud.gd" id="7_unxgw"]
+[ext_resource type="PackedScene" uid="uid://2qgrq5y5o8vn" path="res://scenes/enemies/enemy_rusher.tscn" id="8_63yqs"]
+[ext_resource type="PackedScene" uid="uid://dc344ap2m3w1p" path="res://scenes/enemies/enemy_brute.tscn" id="9_vc0c3"]
 [ext_resource type="PackedScene" uid="uid://ch026opg8k7ju" path="res://scenes/enemies/enemy_shooter.tscn" id="10_pbic4"]
 
 [sub_resource type="Environment" id="Environment_jca3c"]
@@ -193,3 +195,15 @@ player_path = NodePath("../Player")
 
 [node name="EnemyShooter" parent="." unique_id=2060835396 instance=ExtResource("10_pbic4")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.290314, -4.7683716e-07, -9.970816)
+
+[node name="EnemyBrute" parent="." unique_id=1638210533 instance=ExtResource("9_vc0c3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.884417, 0, 0.8519182)
+
+[node name="EnemyBrute2" parent="." unique_id=330088074 instance=ExtResource("9_vc0c3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.977952, 0, -3.6368155)
+
+[node name="EnemyRusher" parent="." unique_id=900867618 instance=ExtResource("8_63yqs")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.310713, 0, 0.27472258)
+
+[node name="EnemyRusher2" parent="." unique_id=1269997465 instance=ExtResource("8_63yqs")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.043515, 0, 6.4632835)

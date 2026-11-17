@@ -21,6 +21,12 @@ func _ready() -> void:
 		# Garante que detecta a Layer 1 (onde está a Hurtbox do Player) e Layer 3
 		slam_hitbox.collision_mask = (1 << 0) | (1 << 2)
 
+func _get_visor_transform() -> Dictionary:
+	return {
+		"pos": Vector3(0.0, 1.28, -0.58),
+		"size": Vector3(0.68, 0.18, 0.16)
+	}
+
 func _build_default_mesh() -> Mesh:
 	var box := BoxMesh.new()
 	box.size = Vector3(1.15, 1.75, 1.15)

@@ -68,11 +68,34 @@ func _setup_visuals() -> void:
 	_base_material.roughness = 0.75
 	_body_mesh.material_override = _base_material
 
+	# Visor frontal procedural (ajusta posição e largura conforme o arquétipo)
+	if not visual_root.get_node_or_null("VisorMesh"):
+		var visor := MeshInstance3D.new()
+		visor.name = "VisorMesh"
+		var visor_cfg := _get_visor_transform()
+		var box := BoxMesh.new()
+		box.size = visor_cfg["size"]
+		visor.mesh = box
+		visor.position = visor_cfg["pos"]
+		
+		var visor_mat := StandardMaterial3D.new()
+		visor_mat.albedo_color = Color(0.12, 0.12, 0.15)
+		visor_mat.emission_enabled = true
+		visor_mat.emission = Color(1.0, 0.85, 0.4) * 0.6
+		visor.material_override = visor_mat
+		visual_root.add_child(visor)
+
 func _build_default_mesh() -> Mesh:
 	var cap := CapsuleMesh.new()
 	cap.radius = 0.42
 	cap.height = 1.65
 	return cap
+
+func _get_visor_transform() -> Dictionary:
+	return {
+		"pos": Vector3(0.0, 1.25, -0.38),
+		"size": Vector3(0.46, 0.16, 0.18)
+	}
 
 func _physics_process(delta: float) -> void:
 	if not is_on_floor():
