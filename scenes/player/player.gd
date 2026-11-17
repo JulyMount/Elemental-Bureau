@@ -59,6 +59,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("ultimate") and not _is_dashing:
 		if skill_manager.trigger_skill("ultimate"):
 			elemental.cast_ultimate()
+	elif event.is_action_pressed("switch_element"):
+		if elemental:
+			elemental.switch_element()
 
 func _physics_process(delta: float) -> void:
 	# Timers
@@ -85,7 +88,7 @@ func _physics_process(delta: float) -> void:
 
 func _process_normal_movement(direction: Vector3, delta: float) -> void:
 	var current_max_speed := SPEED * (0.35 if _is_attacking else 1.0)
-	
+
 	if direction != Vector3.ZERO:
 		velocity.x = move_toward(velocity.x, direction.x * current_max_speed, ACCELERATION * delta)
 		velocity.z = move_toward(velocity.z, direction.z * current_max_speed, ACCELERATION * delta)
@@ -102,7 +105,7 @@ func _start_dash() -> void:
 	_dash_timer = DASH_DURATION
 	_dash_cooldown_timer = DASH_COOLDOWN
 	_dash_direction = _last_move_dir
-	
+
 	# Ativa i-frames durante o Dash
 	health_component.is_invulnerable = true
 	visual_root.rotation.y = atan2(-_dash_direction.x, -_dash_direction.z)
@@ -113,7 +116,7 @@ func _process_dash(delta: float) -> void:
 	_dash_timer -= delta
 	velocity.x = _dash_direction.x * DASH_SPEED
 	velocity.z = _dash_direction.z * DASH_SPEED
-	
+
 	if _dash_timer <= 0.0:
 		_is_dashing = false
 		health_component.is_invulnerable = false
@@ -123,10 +126,10 @@ func _process_dash(delta: float) -> void:
 func _perform_basic_attack() -> void:
 	_is_attacking = true
 	var aim_dir: Vector3 = _get_soft_lock_direction(_last_move_dir)
-	
+
 	# Usa look_at para garantir que o eixo -Z (frente real) aponte exatamente para aim_dir
 	visual_root.look_at(visual_root.global_position + aim_dir, Vector3.UP)
-	
+
 	melee_hitbox.monitoring = true
 	await get_tree().create_timer(0.15).timeout
 	melee_hitbox.monitoring = false
@@ -146,10 +149,10 @@ func _get_soft_lock_direction(desired_dir: Vector3) -> Vector3:
 		var dist: float = to_target.length()
 		if dist <= 0.05 or dist > SOFT_LOCK_RANGE:
 			continue
-			
+
 		var dir_to_target: Vector3 = to_target / dist
 		var angle: float = desired_dir.angle_to(dir_to_target)
-		
+
 		# Se estiver bem perto (< 2.5m) ou dentro do cone frontal, puxa a mira
 		if dist < 2.5 or angle <= max_angle_rad:
 			var score: float = (1.0 - min(angle / max_angle_rad, 1.0)) * 0.6 + (1.0 - (dist / SOFT_LOCK_RANGE)) * 0.4

@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://46ko3w03chpd"]
+
+[ext_resource type="Script" uid="uid://dltn256ijtloy" path="res://scenes/vfx/rock_pillar.gd" id="1_gs422"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_30jai"]
+size = Vector3(1.2, 2.2, 1.2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_30jai"]
+albedo_color = Color(0.61960787, 0.41960785, 0.23137255, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_30jai"]
+material = SubResource("StandardMaterial3D_30jai")
+size = Vector3(1.2, 2.2, 1.2)
+
+[node name="RockPillar" type="StaticBody3D" unique_id=2057777568]
+script = ExtResource("1_gs422")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1846104242]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+shape = SubResource("BoxShape3D_30jai")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=344029829]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+mesh = SubResource("BoxMesh_30jai")

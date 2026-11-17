@@ -7,7 +7,9 @@
 [ext_resource type="Script" uid="uid://dg8rwq8w3rpav" path="res://scripts/components/elemental_component.gd" id="5_tpg5x"]
 [ext_resource type="Resource" uid="uid://e5d4o78ytyo0" path="res://scripts/resources/fogo.tres" id="6_c3xxp"]
 [ext_resource type="PackedScene" uid="uid://bjjgqmrrjavyx" path="res://scenes/vfx/FireballProjectile.tscn" id="7_npwbq"]
+[ext_resource type="Resource" uid="uid://bgy0njqm3pet7" path="res://scripts/resources/terra.tres" id="7_pn6s4"]
 [ext_resource type="Script" uid="uid://c03xyuvk6w3fv" path="res://scripts/components/skill_manager_component.gd" id="8_v42im"]
+[ext_resource type="PackedScene" uid="uid://46ko3w03chpd" path="res://scenes/vfx/rock_pillar.tscn" id="9_7oing"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_wr5hl"]
 radius = 0.4
@@ -75,8 +77,11 @@ shape = SubResource("SphereShape3D_524rm")
 
 [node name="ElementalComponent" type="Node" parent="." unique_id=651928327]
 script = ExtResource("5_tpg5x")
+fire_element = ExtResource("6_c3xxp")
+earth_element = ExtResource("7_pn6s4")
 current_element = ExtResource("6_c3xxp")
 fireball_scene = ExtResource("7_npwbq")
+rock_pillar_scene = ExtResource("9_7oing")
 
 [node name="SkillManagerComponent" type="Node" parent="." unique_id=246323317]
 script = ExtResource("8_v42im")
