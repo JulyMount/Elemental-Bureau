@@ -16,3 +16,4 @@ Em vez de herança profunda, as entidades combinam componentes independentes:
 * [[Componentes de Combate]] — `HealthComponent`, `HitboxComponent`, `HurtboxComponent` e `SkillManagerComponent`.
 * [[Sistema Elemental]] — `ElementalComponent`, recursos `ElementData` e fábrica de malhas `ProceduralMeshFactory`.
 * [[Hud e Interface]] — `CombatHUD` em `CanvasLayer` (`layer = 50`), barras dinâmicas e leitura automática do `InputMap`.
+* [[Sistema_de_Inimigos]] COMPLETAR
